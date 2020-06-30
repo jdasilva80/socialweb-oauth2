@@ -63,6 +63,8 @@
 			<groupId>com.jdasilva.socialweb.commons</groupId>
 			<artifactId>socialweb-commons</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+    		<systemPath>${project.basedir}/src/main/resources/Name_Your_JAR.jar</systemPath>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.persistence</groupId>
