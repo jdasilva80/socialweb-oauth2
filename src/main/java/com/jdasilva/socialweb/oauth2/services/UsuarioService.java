@@ -1,6 +1,8 @@
 package com.jdasilva.socialweb.oauth2.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -13,18 +15,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import com.jdasilva.socialweb.commons.models.entity.Usuario;
-import com.jdasilva.socialweb.oauth2.clients.UsuarioFeignClient;
+//import com.jdasilva.socialweb.oauth2.clients.UsuarioFeignClient;
 
 import brave.Tracer;
-import feign.FeignException;
+//import feign.FeignException;
 
 @Service//proveedor de autenticación
 public class UsuarioService implements UserDetailsService, IUsuarioService {
 
+//	@Autowired
+//	private UsuarioFeignClient usuarioFeignClient;
+	
 	@Autowired
-	private UsuarioFeignClient usuarioFeignClient;
+	RestTemplate clienteRest;
 
 	@Autowired
 	private Tracer tracer;
@@ -50,7 +57,8 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 
 			return userDetails;
 
-		} catch (FeignException e) {
+//		} catch (FeignException e) {
+		} catch (RestClientException e) { 
 
 			String error = "Usuario ".concat(username).concat("no existe en el sistema, ").concat(e.getMessage());
 			tracer.currentSpan().tag("error.mensaje", error);
@@ -61,16 +69,37 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 		}
 	}
 
+//	@Override
+//	public Usuario findByUserName(String username) {
+//
+//		return usuarioFeignClient.findByUserName(username);
+//	}
+//
+//	@Override
+//	public Usuario update(Usuario usuario, Long id) {
+//
+//		return usuarioFeignClient.update(usuario, id);
+//	}
+	
 	@Override
 	public Usuario findByUserName(String username) {
 
-		return usuarioFeignClient.findByUserName(username);
+		Map<String, String> pathVariables = new HashMap<>();
+		pathVariables.put("username", username);
+
+		Usuario usuario = clienteRest.getForObject(
+				"https://soyjose-usuarios.herokuapp.com/usuarios/username/{username}", Usuario.class,
+				pathVariables);
+
+		return usuario;
 	}
 
 	@Override
 	public Usuario update(Usuario usuario, Long id) {
 
-		return usuarioFeignClient.update(usuario, id);
+		clienteRest.put("https://soyjose-usuarios.herokuapp.com/usuarios/".concat(id.toString()), usuario);
+
+		return usuario;
 	}
 
 }
