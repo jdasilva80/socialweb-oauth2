@@ -17,6 +17,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @RefreshScope//se combina con actuator para refrescar las configuraciones (config-server)
 @Configuration
@@ -42,11 +45,22 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private String clientSecret;
 
 	@Override
-	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {		
+				
 		// es el endpoint para generar el token, con la ruta POST: /oauth/token (permitall para que la ruta sea pública)
 		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");// ruta para validar el token
 		// estos 2 endpoints están protegidos por Header authorization http Basic (client id,
 		// client secret), en cambio el token se envia como Bearer.
+		
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.applyPermitDefaultValues();
+        config.addAllowedHeader("access-control-allow-origin");
+
+        // Maybe there's a way to use config from AuthorizationServerEndpointsConfigurer endpoints?
+        source.registerCorsConfiguration("/oauth/token", config);
+        CorsFilter filter = new CorsFilter(source);
+        security.addTokenEndpointAuthenticationFilter(filter);
 	}
 
 	@Override 
