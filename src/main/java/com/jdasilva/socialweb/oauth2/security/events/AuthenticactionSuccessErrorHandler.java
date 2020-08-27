@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.jdasilva.socialweb.commons.models.entity.Usuario;
 import com.jdasilva.socialweb.oauth2.services.IUsuarioService;
 
-import brave.Tracer;
+//import brave.Tracer;
 import feign.FeignException;
 
 @Component
@@ -21,8 +21,8 @@ public class AuthenticactionSuccessErrorHandler implements AuthenticationEventPu
 	@Autowired
 	IUsuarioService usuarioService;
 
-	@Autowired
-	Tracer tracer;
+//	@Autowired
+//	Tracer tracer;
 
 	Logger log = LoggerFactory.getLogger(AuthenticactionSuccessErrorHandler.class);
 
@@ -70,13 +70,13 @@ public class AuthenticactionSuccessErrorHandler implements AuthenticationEventPu
 
 			usuarioService.update(usuario, usuario.getId());
 
-			tracer.currentSpan().tag("error.mensaje", sb.toString());
+			//tracer.currentSpan().tag("error.mensaje", sb.toString());
 
 		} catch (FeignException e) {
 
 			String error = String.format("El usuario %s no existe", authentication.getName());
 			sb.append(" - " + error);
-			tracer.currentSpan().tag("error.mensaje", sb.toString());
+			//tracer.currentSpan().tag("error.mensaje", sb.toString());
 			log.error(error);
 		}
 

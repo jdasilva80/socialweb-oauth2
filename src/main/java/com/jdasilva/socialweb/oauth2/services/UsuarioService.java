@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import com.jdasilva.socialweb.commons.models.entity.Usuario;
 //import com.jdasilva.socialweb.oauth2.clients.UsuarioFeignClient;
 
-import brave.Tracer;
+//import brave.Tracer;
 //import feign.FeignException;
 
 @Service//proveedor de autenticación
@@ -33,8 +33,8 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 	@Autowired
 	RestTemplate clienteRest;
 
-	@Autowired
-	private Tracer tracer;
+//	@Autowired
+//	private Tracer tracer;
 
 	private Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
@@ -61,7 +61,7 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 		} catch (RestClientException e) { 
 
 			String error = "Usuario ".concat(username).concat("no existe en el sistema, ").concat(e.getMessage());
-			tracer.currentSpan().tag("error.mensaje", error);
+			//tracer.currentSpan().tag("error.mensaje", error);
 			
 			//se recibirá un json "bad credentials"
 			
