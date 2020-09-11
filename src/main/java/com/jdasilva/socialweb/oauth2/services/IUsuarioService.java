@@ -1,6 +1,6 @@
 package com.jdasilva.socialweb.oauth2.services;
 
-import com.jdasilva.socialweb.commons.models.entity.Usuario;
+import com.jdasilva.socialweb.commons.models.usuarios.entity.Usuario;
 
 public interface IUsuarioService {
 

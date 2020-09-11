@@ -16,9 +16,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
-import com.jdasilva.socialweb.commons.models.entity.Usuario;
+import com.jdasilva.socialweb.commons.models.usuarios.entity.Usuario;
+import com.jdasilva.socialweb.oauth2.clients.UsuarioFeignClient;
 //import com.jdasilva.socialweb.oauth2.clients.UsuarioFeignClient;
 
 //import brave.Tracer;
@@ -27,11 +27,11 @@ import com.jdasilva.socialweb.commons.models.entity.Usuario;
 @Service//proveedor de autenticación
 public class UsuarioService implements UserDetailsService, IUsuarioService {
 
-//	@Autowired
-//	private UsuarioFeignClient usuarioFeignClient;
-	
 	@Autowired
-	RestTemplate clienteRest;
+	private UsuarioFeignClient usuarioFeignClient;
+	
+//	@Autowired
+//	RestTemplate clienteRest;
 
 //	@Autowired
 //	private Tracer tracer;
@@ -87,9 +87,10 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 		Map<String, String> pathVariables = new HashMap<>();
 		pathVariables.put("username", username);
 
-		Usuario usuario = clienteRest.getForObject(
-				"https://soyjose-usuarios.herokuapp.com/usuarios/username/{username}", Usuario.class,
-				pathVariables);
+//		Usuario usuario = clienteRest.getForObject(
+//				"https://soyjose-usuarios.herokuapp.com/usuarios/username/{username}", Usuario.class,
+//				pathVariables);
+		Usuario usuario = usuarioFeignClient.findByUserName(username);
 
 		return usuario;
 	}
@@ -97,9 +98,10 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 	@Override
 	public Usuario update(Usuario usuario, Long id) {
 
-		clienteRest.put("https://soyjose-usuarios.herokuapp.com/usuarios/".concat(id.toString()), usuario);
+		//clienteRest.put("https://soyjose-usuarios.herokuapp.com/usuarios/".concat(id.toString()), usuario);
+		Usuario usr = usuarioFeignClient.update(usuario, id);
 
-		return usuario;
+		return usr;
 	}
 
 }
